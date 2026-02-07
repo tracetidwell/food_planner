@@ -1,0 +1,52 @@
+═══════════════════════════════════════════════════════
+  HOW TO RUN ON MOBILE (Android Emulator)
+═══════════════════════════════════════════════════════
+
+STEP 1: Start the emulator
+---------------------------
+./start-emulator.sh
+
+→ Choose an emulator from the list
+→ Wait 30-60 seconds for it to boot
+→ You'll see "✓ Emulator is ready!"
+
+
+STEP 2: Start backend
+---------------------
+./run-backend.sh
+
+→ Wait for "INFO: Uvicorn running on http://127.0.0.1:8000"
+
+
+STEP 3: Run mobile app
+----------------------
+./run-mobile.sh
+
+→ Press Enter (use first device)
+→ Press 'y' for clean build (first time only)
+→ Wait 30-60 seconds for app to build and install
+→ App launches on emulator!
+
+
+═══════════════════════════════════════════════════════
+
+IMPORTANT: The emulator needs to be running FIRST!
+
+Check if it's running:
+  flutter devices
+
+Should show something like:
+  sdk gphone64 x86 64 (mobile) • emulator-5554 • android-x64
+
+═══════════════════════════════════════════════════════
+
+QUICK COMMANDS:
+
+Start emulator:        ./start-emulator.sh
+Check if running:      flutter devices
+Start backend:         ./run-backend.sh
+Run mobile app:        ./run-mobile.sh
+
+═══════════════════════════════════════════════════════
+
+For detailed help, see: EMULATOR_GUIDE.md
