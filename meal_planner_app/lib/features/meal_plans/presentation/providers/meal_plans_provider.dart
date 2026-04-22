@@ -184,6 +184,17 @@ class MealPlanGeneration extends _$MealPlanGeneration {
   }
 }
 
+/// Provider for the list of all meal plans
+@riverpod
+Future<List<MealPlan>> mealPlansList(MealPlansListRef ref) async {
+  final useCase = ref.watch(getMealPlansUseCaseProvider);
+  final result = await useCase();
+  return result.fold(
+    (failure) => throw Exception(failure.message),
+    (plans) => plans,
+  );
+}
+
 /// State notifier for grocery list
 @riverpod
 class GroceryListState extends _$GroceryListState {

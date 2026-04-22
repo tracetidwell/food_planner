@@ -18,6 +18,7 @@ class MealPlansRemoteDataSource {
     final response = await _dio.post(
       '/api/v1/meal-plans/generate',
       data: request.toJson(),
+      options: Options(receiveTimeout: const Duration(seconds: 180)),
     );
     return MealPlanModel.fromJson(response.data);
   }
@@ -55,6 +56,7 @@ class MealPlansRemoteDataSource {
     final response = await _dio.post(
       '/api/v1/meal-plans/$mealPlanId/regenerate-meal',
       data: request.toJson(),
+      options: Options(receiveTimeout: const Duration(seconds: 120)),
     );
     return PlannedMealModel.fromJson(response.data);
   }

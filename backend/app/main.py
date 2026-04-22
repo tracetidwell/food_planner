@@ -8,6 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.config import settings
 from app.api.v1.router import api_router
+from app.db.base import Base
+from app.db.session import engine
 from app.core.exceptions import (
     APIKeyLimitExceeded,
     OpenAIAPIError,
@@ -23,6 +25,9 @@ app = FastAPI(
     version="1.0.0",
     debug=settings.DEBUG,
 )
+
+# Create database tables (idempotent — won't recreate existing tables)
+Base.metadata.create_all(bind=engine)
 
 # Configure CORS
 app.add_middleware(

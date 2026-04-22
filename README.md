@@ -1,396 +1,204 @@
-# 🍽️ Meal Planner & Nutrition Tracking App
+# Food Tracker — AI-Powered Meal Planning App
 
-A full-stack mobile and web application for generating personalized meal plans, tracking nutrition, and managing dietary goals using AI-powered meal generation.
-
----
-
-## 🚀 Quick Start
-
-### Run the Full Application
-
-```bash
-# Make scripts executable (first time only)
-chmod +x run.sh run-backend.sh run-frontend.sh
-
-# Run everything with interactive menu
-./run.sh
-```
-
-This starts both backend and frontend with options for:
-- **Web** - Browser at http://localhost:8080
-- **Chrome** - Opens in Chrome
-- **Mobile** - Android/iOS device or emulator
-- **Backend Only** - API development
-
-📖 **Detailed instructions:** See [RUNNING.md](./RUNNING.md)
+A full-stack mobile application for AI-generated meal planning, nutrition tracking, and grocery list management. A Flutter frontend communicates with a Python/FastAPI backend that uses GPT-4o to generate personalized, macro-balanced meal plans.
 
 ---
 
-## 📋 Features
-
-### ✅ Implemented (Ready to Use)
-
-**Backend (100% Complete):**
-- ✅ User authentication (JWT-based)
-- ✅ TDEE (Total Daily Energy Expenditure) calculator
-- ✅ Nutrition goal setting (calories, macros)
-- ✅ AI-powered meal plan generation (OpenAI GPT-4o)
-- ✅ Grocery list auto-generation
-- ✅ Meal logging (eaten/skipped tracking)
-- ✅ Analytics (7-day and 30-day summaries)
-- ✅ Profile management with food preferences
-- ✅ API key management for custom OpenAI keys
-- ✅ 77 comprehensive tests
-- ✅ AWS deployment infrastructure (Terraform)
-
-**Frontend (~40% Complete):**
-- ✅ User authentication (login/register)
-- ✅ TDEE calculator with recommendations
-- ✅ Nutrition goal setting (interactive macro sliders)
-- ✅ Profile & settings management
-- ✅ Clean Architecture with Riverpod state management
-- ✅ Material Design 3 UI
-- ✅ Dark/light theme support
-
-### 🚧 In Progress
-
-- 🚧 Meal plan generation UI (data layer 10% done)
-- 🚧 Meal plan preview and acceptance
-- 🚧 Grocery list viewing
-- 🚧 Today's meals view with logging
-- 🚧 Analytics dashboard with charts
-- 🚧 Onboarding flow
-
----
-
-## 📊 Project Status
-
-| Component | Completion | Status |
-|-----------|------------|--------|
-| **Backend API** | 100% | ✅ Production Ready |
-| **AWS Infrastructure** | 100% | ✅ Deployment Ready |
-| **Backend Tests** | 100% (77 tests) | ✅ All Passing |
-| **Frontend Auth** | 100% | ✅ Complete |
-| **Frontend Goals** | 100% | ✅ Complete |
-| **Frontend Profile** | 95% | ✅ Complete |
-| **Frontend Meal Plans** | 10% | 🟡 In Progress |
-| **Frontend Logging** | 5% | 🟡 Started |
-| **Frontend Analytics** | 0% | ⬜ Not Started |
-| **Frontend Onboarding** | 0% | ⬜ Not Started |
-| **Overall Project** | ~70% | 🟡 Active Development |
-
-**Last Updated:** January 11, 2026
-📖 **Detailed Status:** See [status/2026-01-10_project_status.md](./status/2026-01-10_project_status.md)
-📖 **Latest Progress:** See [PROGRESS_UPDATE.md](./PROGRESS_UPDATE.md)
-
----
-
-## 🏗️ Architecture
+## Architecture
 
 ```
-meal_planner_app/
-├── backend/                    # FastAPI backend (Python)
-│   ├── app/
-│   │   ├── api/               # API endpoints (23 routes)
-│   │   ├── core/              # Security, config, exceptions
-│   │   ├── crud/              # Database operations
-│   │   ├── models/            # SQLAlchemy models (7 tables)
-│   │   ├── schemas/           # Pydantic schemas
-│   │   ├── services/          # Business logic (OpenAI, TDEE, etc.)
-│   │   └── utils/             # Helper utilities
-│   ├── tests/                 # 77 comprehensive tests
-│   ├── alembic/               # Database migrations
-│   └── infrastructure/        # AWS deployment (Terraform)
-│
-├── meal_planner_app/          # Flutter frontend (Dart)
-│   ├── lib/
-│   │   ├── core/              # Routing, theme, network, storage
-│   │   ├── features/          # Feature modules (Clean Architecture)
-│   │   │   ├── auth/          # Authentication (100% ✅)
-│   │   │   ├── goals/         # TDEE & goals (100% ✅)
-│   │   │   ├── profile/       # User profile (95% ✅)
-│   │   │   ├── meal_plans/    # Meal planning (10% 🚧)
-│   │   │   ├── logs/          # Meal logging (5% 🚧)
-│   │   │   └── analytics/     # Analytics (0% ⬜)
-│   │   └── shared/            # Shared widgets, providers
-│   └── test/                  # Widget & unit tests
-│
-├── run.sh                     # Main run script (recommended)
-├── run-backend.sh             # Backend only
-├── run-frontend.sh            # Frontend only
-└── RUNNING.md                 # Detailed run instructions
+┌─────────────────────────────────┐         ┌──────────────────────────────────┐
+│      Flutter Mobile App         │  HTTP/  │        FastAPI Backend            │
+│                                 │  JSON   │                                  │
+│  GoRouter (auth-guarded)        │◄───────►│  /api/v1/*  (23 endpoints)       │
+│  Riverpod state management      │         │  JWT authentication               │
+│  Clean Architecture layers      │         │  SQLAlchemy ORM + Alembic        │
+│  Hive offline cache             │         │  GPT-4o integration              │
+│  flutter_secure_storage (JWT)   │         │  AES-256-GCM key encryption      │
+└─────────────────────────────────┘         └──────────────────────────────────┘
+                                                            │
+                                             ┌──────────────┴───────────────┐
+                                             │            AWS               │
+                                             │  App Runner (live deploy)    │
+                                             │  ECS Fargate (Terraform IaC) │
+                                             │  ECR · Secrets Manager       │
+                                             │  ALB · CloudWatch Logs       │
+                                             └──────────────────────────────┘
 ```
 
-**Architecture Pattern:** Clean Architecture with feature-first organization
-**State Management:** Riverpod with code generation
-**Database:** SQLite (dev) → PostgreSQL (production)
-**API:** RESTful with OpenAPI/Swagger docs
+Both layers follow Clean Architecture. The Flutter app is organized as `data → domain → presentation` per feature. The backend mirrors this with SQLAlchemy models, CRUD helpers, a service layer, and Pydantic schemas.
 
 ---
 
-## 🛠️ Technology Stack
+## Core Features
 
-### Backend
-- **Framework:** FastAPI 0.109.0
-- **Database:** SQLAlchemy ORM + SQLite/PostgreSQL
-- **Authentication:** JWT tokens with bcrypt
-- **AI Integration:** OpenAI GPT-4o
-- **Security:** AES-256-GCM encryption for API keys
-- **Testing:** pytest with 77 tests
-- **Deployment:** AWS (ECS Fargate, ALB, RDS ready)
+### Authentication
+- Email + password registration and login
+- JWT tokens (7-day expiry, HS256) stored in platform Keystore/Keychain via `flutter_secure_storage`
+- GoRouter guard redirects unauthenticated users to login and authenticated users away from auth routes
 
-### Frontend
-- **Framework:** Flutter 3.10+
-- **State Management:** Riverpod 2.4.9 (with code generation)
-- **HTTP Client:** Dio 5.4.0
-- **Routing:** GoRouter 13.0.0
-- **Storage:** flutter_secure_storage + Hive
-- **Code Generation:** freezed, json_serializable, riverpod_generator
-- **Charts:** fl_chart 0.66.0 (for analytics)
-- **UI:** Material Design 3
+### TDEE Calculator & Nutrition Goals
+- Mifflin-St Jeor BMR with activity multipliers (1.2–1.9)
+- Inputs: age, weight, height, gender, activity level, fitness goal (lose / maintain / gain)
+- Calorie adjustments: −500 / 0 / +500 kcal/day from TDEE
+- One active goal at a time; macros stored as percentages or absolute grams
+
+### AI Meal Plan Generation
+- GPT-4o generates multi-day plans tailored to the user's active nutrition goal
+- System prompt enforces calorie distribution (meals ~75%, snacks ~25%), per-meal calorie ranges, protein minimums per snack, and strict macro math (`calories = P×4 + C×4 + F×9`)
+- Backend validates the response against ±5% calorie tolerance; retries up to 3 times on failure, passing the previous GPT output and error details back for self-correction
+- Individual meals within an accepted plan can be regenerated in isolation
+
+### Grocery List
+- Accepting a meal plan auto-generates a grocery list by aggregating all food items across the plan
+- Quantities are summed by `(food_name, unit)` and grouped into categories: Protein, Vegetables, Fruits, Grains, Dairy, Nuts & Seeds, Oils & Condiments, Other
+
+### Meal Logging
+- Log each planned meal as `eaten` or `skipped`
+- Query logs by today, specific date, or a date range (up to 90 days)
+
+### Analytics
+- Daily macro totals (protein, carbs, fat, calories) and meal status
+- 7-day and 30-day averages with a logging consistency percentage (days with logs / total days)
+
+### OpenAI API Key Management
+- Users can supply their own OpenAI key, stored encrypted with AES-256-GCM (PBKDF2HMAC-derived key, random salt + nonce per entry); the raw key is never returned in responses
+- Users without a custom key are capped at 1,000 AI requests/month (configurable)
+
+---
+
+## Tech Stack
+
+### Backend (`/backend`)
+
+| | |
+|---|---|
+| Framework | FastAPI 0.109 + Uvicorn |
+| ORM / Migrations | SQLAlchemy 2.0 + Alembic |
+| Database | SQLite (dev) / PostgreSQL (prod) |
+| Auth | python-jose (JWT) + passlib/bcrypt |
+| Encryption | AES-256-GCM via `cryptography` |
+| AI | OpenAI SDK 1.10 — GPT-4o, JSON mode, 3-attempt retry via `tenacity` |
+| Validation | Pydantic v2 + pydantic-settings |
+| Testing | pytest + pytest-cov (77 tests) |
+
+### Frontend (`/meal_planner_app`)
+
+| | |
+|---|---|
+| Framework | Flutter / Dart |
+| State management | Riverpod 2 + riverpod_generator |
+| HTTP | Dio 5 with auth + logging interceptors |
+| Routing | GoRouter 13 |
+| Secure storage | flutter_secure_storage (Keystore / Keychain) |
+| Local cache | Hive 2 |
+| Models | freezed + json_serializable |
+| Error handling | dartz (`Either<Failure, T>`) |
+| Charts | fl_chart |
 
 ### Infrastructure
-- **Cloud:** AWS
-- **IaC:** Terraform
-- **CI/CD:** GitHub Actions
-- **Containers:** Docker + ECR + ECS Fargate
-- **Secrets:** AWS Secrets Manager
-- **Monitoring:** CloudWatch Logs
+
+| | |
+|---|---|
+| CI/CD | GitHub Actions (test → build → push → deploy) |
+| Cloud (live) | AWS App Runner |
+| Cloud (IaC) | ECS Fargate, ALB, VPC, ECR — full Terraform stack |
+| Secrets | AWS Secrets Manager |
+| Observability | CloudWatch Logs + Container Insights |
 
 ---
 
-## 📖 Documentation
+## Project Structure
 
-| Document | Description |
-|----------|-------------|
-| [RUNNING.md](./RUNNING.md) | **How to run the application** (detailed) |
-| [detailed_spec.md](./detailed_spec.md) | Complete feature specification |
-| [PROGRESS_UPDATE.md](./PROGRESS_UPDATE.md) | Latest development progress (Jan 11, 2026) |
-| [status/2026-01-10_project_status.md](./status/2026-01-10_project_status.md) | Comprehensive project status report |
-| [backend/README.md](./backend/README.md) | Backend API documentation |
-| [backend/infrastructure/AWS_DEPLOYMENT.md](./backend/infrastructure/AWS_DEPLOYMENT.md) | Production deployment guide |
-| [backend/infrastructure/QUICKSTART.md](./backend/infrastructure/QUICKSTART.md) | 10-minute AWS deployment |
+```
+food_tracker/
+├── .github/workflows/deploy-aws.yml    # CI/CD pipeline
+├── backend/
+│   ├── app/
+│   │   ├── api/v1/endpoints/           # auth, profile, goals, meal_plans, logs, analytics
+│   │   ├── models/                     # SQLAlchemy ORM (User, Goal, MealPlan, Log, Grocery)
+│   │   ├── schemas/                    # Pydantic request/response schemas
+│   │   ├── crud/                       # Generic + specialized DB operations
+│   │   ├── services/                   # openai, meal_plan, grocery, analytics, tdee
+│   │   ├── core/                       # JWT/bcrypt/AES security, constants, exceptions
+│   │   └── db/                         # Engine, session, init
+│   ├── alembic/                        # DB migrations
+│   ├── infrastructure/terraform/       # Full AWS ECS/ALB/VPC IaC
+│   ├── tests/                          # pytest suite
+│   └── Dockerfile
+└── meal_planner_app/
+    └── lib/
+        ├── core/
+        │   ├── routing/                # GoRouter with auth redirect guard
+        │   ├── network/                # Dio client + auth interceptor
+        │   └── storage/               # Secure storage + Hive cache manager
+        └── features/                   # Each feature: data / domain / presentation
+            ├── auth/
+            ├── goals/
+            ├── meal_plans/
+            ├── profile/
+            └── logs/
+```
 
 ---
 
-## 🚀 Getting Started
+## Local Development
 
-### Prerequisites
+### Backend
 
-```bash
-# Check if you have required software
-python3 --version  # 3.8 or higher
-flutter --version  # 3.10 or higher
-git --version
-```
-
-### Installation
-
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd food_tracker
-
-# Run setup (automatically handles everything)
-./run.sh
-```
-
-The script will:
-1. Check prerequisites
-2. Create Python virtual environment
-3. Install backend dependencies
-4. Run database migrations
-5. Start backend server
-6. Give you options for running frontend
-
-### Manual Setup (if you prefer)
-
-**Backend:**
 ```bash
 cd backend
-python3 -m venv venv
-source venv/bin/activate
+cp .env.example .env          # set OPENAI_API_KEY, SECRET_KEY, ENCRYPTION_KEY
+
+# Option A — Docker
+docker-compose up
+
+# Option B — virtualenv
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-# Edit .env with your API keys
 alembic upgrade head
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload
 ```
 
-**Frontend:**
+API: `http://localhost:8000` · Swagger docs: `http://localhost:8000/docs`
+
+### Flutter App
+
 ```bash
 cd meal_planner_app
 flutter pub get
 flutter pub run build_runner build --delete-conflicting-outputs
-flutter run -d web-server --web-port 8080
+
+# Android emulator
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+
+# Physical device (use your machine's LAN IP)
+flutter run --dart-define=API_BASE_URL=http://192.168.x.x:8000
 ```
 
 ---
 
-## 🔑 Configuration
+## Deployment (AWS)
 
-### Backend Environment Variables
+Pushes to `main` that touch `backend/**` trigger the GitHub Actions pipeline:
 
-Create `backend/.env` from `backend/.env.example`:
+1. **Test** — `pytest tests/ -v --cov=app`
+2. **Build & push** — Docker image tagged with git SHA + `latest` pushed to ECR
+3. **Deploy** — triggers App Runner redeployment; validates `/health`
 
-```env
-# Required
-SECRET_KEY=<generate with: openssl rand -hex 32>
-ENCRYPTION_KEY=<generate with: openssl rand -hex 32>
-OPENAI_API_KEY=sk-your-openai-api-key
+Required GitHub secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
 
-# Optional
-DEBUG=True
-DATABASE_URL=sqlite:///./meal_planner.db
-API_USAGE_LIMIT_PER_MONTH=10
-```
-
-### Frontend Configuration
-
-Edit `meal_planner_app/lib/core/config/app_config.dart` if needed:
-```dart
-static const String apiBaseUrl = 'http://localhost:8000';
-```
+`/backend/infrastructure/terraform/` contains a full production ECS Fargate stack: private subnets, ALB, auto-scaling (2–4 tasks), Secrets Manager injection, CloudWatch logging.
 
 ---
 
-## 🧪 Testing
+## Environment Variables
 
-### Run Backend Tests
-```bash
-cd backend
-source venv/bin/activate
-pytest tests/ -v --cov=app
-```
-
-### Run Frontend Tests
-```bash
-cd meal_planner_app
-flutter test
-```
-
-### Manual API Testing
-- **Swagger UI:** http://localhost:8000/docs
-- **Health Check:** http://localhost:8000/health
-
----
-
-## 📱 Supported Platforms
-
-- ✅ **Web** (Chrome, Firefox, Safari, Edge)
-- ✅ **Android** (API 21+)
-- ✅ **iOS** (iOS 12+)
-- ⬜ **macOS** (not tested)
-- ⬜ **Windows** (not tested)
-- ⬜ **Linux** (not tested)
-
----
-
-## 🚀 Deployment
-
-### Local Development
-```bash
-./run.sh
-```
-
-### AWS Production
-```bash
-cd backend/infrastructure
-./deploy.sh
-```
-
-See [AWS_DEPLOYMENT.md](./backend/infrastructure/AWS_DEPLOYMENT.md) for full details.
-
-**Estimated AWS Costs:** $55-140/month depending on configuration
-
----
-
-## 🗓️ Roadmap
-
-### Current Sprint (Week of Jan 11, 2026)
-- [ ] Implement Meal Plans data layer
-- [ ] Create meal plan generation UI
-- [ ] Add meal plan preview screen
-
-### Next Sprint
-- [ ] Implement meal logging UI
-- [ ] Create today's meals view
-- [ ] Add analytics dashboard
-
-### Future
-- [ ] Onboarding flow
-- [ ] Push notifications
-- [ ] Recipe database integration
-- [ ] Social sharing features
-- [ ] Barcode scanning
-- [ ] Photo logging
-
-**Estimated MVP Completion:** 6-8 weeks
-
----
-
-## 🤝 Contributing
-
-This is currently a private project, but contributions are welcome:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Standards
-- **Backend:** Follow PEP 8, add type hints, write tests
-- **Frontend:** Follow Dart style guide, use riverpod for state management
-- **Commits:** Use conventional commits (feat:, fix:, docs:, etc.)
-
----
-
-## 📄 License
-
-This project is proprietary. All rights reserved.
-
----
-
-## 🐛 Known Issues
-
-1. **Profile API Key Management:** UI complete, backend integration pending
-2. **Meal Plans:** Only entities created, full feature in progress
-3. **Analytics:** Not yet implemented
-4. **Onboarding:** Not yet implemented
-
-See [PROGRESS_UPDATE.md](./PROGRESS_UPDATE.md) for full details.
-
----
-
-## 💬 Support
-
-- **Issues:** Open an issue on GitHub
-- **Documentation:** See `/docs` folder
-- **Status Updates:** Check [PROGRESS_UPDATE.md](./PROGRESS_UPDATE.md)
-
----
-
-## 📊 Stats
-
-- **Backend:** ~8,000 lines of Python code
-- **Frontend:** ~3,500 lines of Dart code
-- **Tests:** 77 backend tests (100% passing)
-- **API Endpoints:** 23 RESTful endpoints
-- **Database Tables:** 7 tables
-- **Development Time:** ~4 weeks (backend), ~2 weeks (frontend so far)
-
----
-
-## 🙏 Acknowledgments
-
-- **OpenAI** - GPT-4o for meal generation
-- **FastAPI** - Excellent Python web framework
-- **Flutter** - Cross-platform UI framework
-- **Riverpod** - State management solution
-
----
-
-**Built with ❤️ for healthy living and AI-powered nutrition planning**
-
-*Last Updated: January 11, 2026*
+| Variable | Description |
+|---|---|
+| `SECRET_KEY` | JWT signing secret |
+| `OPENAI_API_KEY` | Default app-level OpenAI key |
+| `ENCRYPTION_KEY` | AES key for encrypting user-supplied API keys |
+| `DATABASE_URL` | SQLAlchemy connection string (default: SQLite) |
+| `API_USAGE_LIMIT_PER_MONTH` | Monthly AI call cap per user without a custom key (default: 1000) |
+| `ALLOWED_ORIGINS` | CORS origins, comma-separated |

@@ -5,10 +5,11 @@ import 'package:meal_planner_app/features/auth/presentation/screens/login_screen
 import 'package:meal_planner_app/features/auth/presentation/screens/register_screen.dart';
 import 'package:meal_planner_app/features/goals/presentation/screens/create_goal_screen.dart';
 import 'package:meal_planner_app/features/goals/presentation/screens/tdee_calculator_screen.dart';
-import 'package:meal_planner_app/features/logs/presentation/screens/home_screen.dart';
+import 'package:meal_planner_app/features/home/presentation/screens/home_screen.dart';
 import 'package:meal_planner_app/features/meal_plans/presentation/screens/grocery_list_screen.dart';
 import 'package:meal_planner_app/features/meal_plans/presentation/screens/meal_plan_config_screen.dart';
 import 'package:meal_planner_app/features/meal_plans/presentation/screens/meal_plan_review_screen.dart';
+import 'package:meal_planner_app/features/meal_plans/presentation/screens/meal_plans_list_screen.dart';
 import 'package:meal_planner_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -76,6 +77,10 @@ GoRouter router(RouterRef ref) {
       ),
 
       // Meal Plans routes
+      GoRoute(
+        path: '/meal-plans',
+        builder: (context, state) => const MealPlansListScreen(),
+      ),
       GoRoute(
         path: '/meal-plans/configure',
         builder: (context, state) => const MealPlanConfigScreen(),

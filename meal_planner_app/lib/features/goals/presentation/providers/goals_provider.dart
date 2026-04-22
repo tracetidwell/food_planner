@@ -103,7 +103,7 @@ class Tdee extends _$Tdee {
     return null;
   }
 
-  Future<bool> calculateTdee({
+  Future<TdeeResult?> calculateTdee({
     required int age,
     required double weightKg,
     required double heightCm,
@@ -124,21 +124,17 @@ class Tdee extends _$Tdee {
 
       return result.fold(
         (failure) {
-          print('TDEE Calculation Failure: ${failure.message}');
           state = null;
-          return false;
+          return null;
         },
         (tdeeResult) {
-          print('TDEE Calculation Success: $tdeeResult');
           state = tdeeResult;
-          return true;
+          return tdeeResult;
         },
       );
     } catch (e, stackTrace) {
-      print('TDEE Calculation Exception: $e');
-      print('Stack trace: $stackTrace');
       state = null;
-      return false;
+      return null;
     }
   }
 

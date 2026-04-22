@@ -24,10 +24,10 @@ class Settings(BaseSettings):
 
     # OpenAI
     OPENAI_API_KEY: Optional[str] = None  # Default app key
-    OPENAI_MODEL: str = "gpt-5.2"
+    OPENAI_MODEL: str = "gpt-4o"
     OPENAI_TEMPERATURE: float = 0.7
-    OPENAI_MAX_TOKENS: int = 4000
-    OPENAI_TIMEOUT: int = 30
+    OPENAI_MAX_TOKENS: int = 16384
+    OPENAI_TIMEOUT: int = 90
 
     # Rate Limiting
     API_USAGE_LIMIT_PER_MONTH: int = 1000  # For users without own key

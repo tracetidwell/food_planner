@@ -13,7 +13,7 @@ class MealPlanModel with _$MealPlanModel {
 
   const factory MealPlanModel({
     required String id,
-    @JsonKey(name: 'user_id') required String userId,
+    @JsonKey(name: 'user_id') @Default('') String userId,
     @JsonKey(name: 'goal_id') String? goalId,
     @JsonKey(name: 'start_date') required String startDate,
     @JsonKey(name: 'duration_days') required int durationDays,

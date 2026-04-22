@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meal_planner_app/core/constants/enums.dart';
+import 'package:meal_planner_app/features/goals/domain/entities/tdee_result.dart';
 import 'package:meal_planner_app/features/goals/presentation/providers/goals_provider.dart';
 
 class TdeeCalculatorScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,7 @@ class _TdeeCalculatorScreenState extends ConsumerState<TdeeCalculatorScreen> {
       final weight = double.parse(_weightController.text);
       final height = double.parse(_heightController.text);
 
-      final success = await ref.read(tdeeProvider.notifier).calculateTdee(
+      final result = await ref.read(tdeeProvider.notifier).calculateTdee(
             age: age,
             weightKg: weight,
             heightCm: height,
@@ -52,8 +53,8 @@ class _TdeeCalculatorScreenState extends ConsumerState<TdeeCalculatorScreen> {
       if (mounted) {
         setState(() => _isCalculating = false);
 
-        if (success) {
-          _showResultsDialog();
+        if (result != null) {
+          _showResultsDialog(result);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -76,53 +77,50 @@ class _TdeeCalculatorScreenState extends ConsumerState<TdeeCalculatorScreen> {
     }
   }
 
-  void _showResultsDialog() {
-    final result = ref.read(tdeeProvider);
-    if (result != null) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-            title: const Text('Your TDEE Results'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              _ResultRow(
-                label: 'Maintenance Calories',
-                value: '${result.maintenanceCalories} kcal/day',
-                subtitle: 'To maintain current weight',
-              ),
-              const SizedBox(height: 16),
-              _ResultRow(
-                label: 'TDEE',
-                value: '${result.tdee} kcal/day',
-                subtitle: 'Total Daily Energy Expenditure',
-              ),
-              const SizedBox(height: 16),
-              _ResultRow(
-                label: 'Recommended Calories',
-                value: '${result.recommendedCalories} kcal/day',
-                subtitle: 'Based on your ${_selectedGoalType.displayName} goal',
-                highlight: true,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+  void _showResultsDialog(TdeeResult result) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+          title: const Text('Your TDEE Results'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            _ResultRow(
+              label: 'Maintenance Calories',
+              value: '${result.maintenanceCalories} kcal/day',
+              subtitle: 'To maintain current weight',
             ),
-            FilledButton(
-              onPressed: () {
-                Navigator.pop(context);
-                context.push('/goals/create', extra: result.recommendedCalories);
-              },
-              child: const Text('Set Goal'),
+            const SizedBox(height: 16),
+            _ResultRow(
+              label: 'TDEE',
+              value: '${result.tdee} kcal/day',
+              subtitle: 'Total Daily Energy Expenditure',
+            ),
+            const SizedBox(height: 16),
+            _ResultRow(
+              label: 'Recommended Calories',
+              value: '${result.recommendedCalories} kcal/day',
+              subtitle: 'Based on your ${_selectedGoalType.displayName} goal',
+              highlight: true,
             ),
           ],
         ),
-      );
-    }
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.push('/goals/create', extra: result.recommendedCalories);
+            },
+            child: const Text('Set Goal'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
